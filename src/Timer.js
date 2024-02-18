@@ -18,14 +18,12 @@ const Timer = ({ setShowSettings }) => {
   const [isPaused, setIsPaused] = useState(true);
   const [mode, setMode] = useState("work"); //work----shortBreak----longBreak
   const [secondsLeft, setSecondsLeft] = useState(0);
-  const [workModeCount, setWorkModeCount] = useState(0);
+  const [workModeCount, setWorkModeCount] = useState(1);
 
   const secondsLeftRef = useRef(secondsLeft);
   const isPausedRef = useRef(isPaused);
   const modeRef = useRef(mode);
   const workModeCountRef = useRef(workModeCount);
-
-  // modeRef.current !== "longBreak"
 
   function switchMode(nextMode) {
     let nextSeconds;
@@ -35,18 +33,12 @@ const Timer = ({ setShowSettings }) => {
       workModeCountRef.current++;
     } else if (nextMode === "shortBreak") {
       nextSeconds = settingInfo.shortBreakMinutes * 60;
-    } else if (nextMode === "longBreak") {
-      if (workModeCountRef.current === 4) {
-        nextSeconds = settingInfo.longBreakMinutes * 60;
-        workModeCountRef.current = 0;
-      } else {
-        nextSeconds = settingInfo.workingMinutes * 60;
-      }
+    } else if (nextMode === "longBreak" && workModeCountRef.current === 4) {
+      nextSeconds = settingInfo.longBreakMinutes * 60;
+      workModeCountRef.current = 0;
     } else {
       return;
     }
-
-    console.log(workModeCountRef.current);
 
     setMode(nextMode);
     modeRef.current = nextMode;
@@ -78,12 +70,22 @@ const Timer = ({ setShowSettings }) => {
       }
       if (secondsLeftRef.current === 0) {
         Sound();
-        return switchMode(
-          modeRef.current === "work" ? "shortBreak" : "longBreak"
-        );
+        if (modeRef.current === "work" && workModeCountRef.current !== 4) {
+          switchMode("shortBreak");
+        } else if (
+          modeRef.current === "work" &&
+          workModeCountRef.current === 4
+        ) {
+          switchMode("longBreak");
+        } else if (modeRef.current === "shortBreak") {
+          switchMode("work");
+        } else {
+          switchMode("work");
+        }
+        return;
       }
       tick();
-    }, 10);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [settingInfo]);
