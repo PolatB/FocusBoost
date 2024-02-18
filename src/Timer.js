@@ -33,7 +33,7 @@ const Timer = ({ setShowSettings }) => {
       workModeCountRef.current++;
     } else if (nextMode === "shortBreak") {
       nextSeconds = settingInfo.shortBreakMinutes * 60;
-    } else if (nextMode === "longBreak" && workModeCountRef.current === 4) {
+    } else if (nextMode === "longBreak") {
       nextSeconds = settingInfo.longBreakMinutes * 60;
       workModeCountRef.current = 0;
     } else {
@@ -85,7 +85,7 @@ const Timer = ({ setShowSettings }) => {
         return;
       }
       tick();
-    }, 1000);
+    }, 10);
 
     return () => clearInterval(interval);
   }, [settingInfo]);
