@@ -85,7 +85,7 @@ const Timer = ({ setShowSettings }) => {
         return;
       }
       tick();
-    }, 10);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [settingInfo]);
